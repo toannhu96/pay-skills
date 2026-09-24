@@ -150,9 +150,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. No API key. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -162,7 +162,10 @@
             {
               "x402": {}
             }
-          ]
+          ],
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -309,9 +312,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -322,7 +325,9 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       },
       "post": {
@@ -506,9 +511,9 @@
           "amount": "2000000",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Pay-per-call USDC over x402 or MPP (when enabled). No API key. The live 402 accepts[] is the quote.",
+          "description": "Pay-per-call Solana USDC over x402 or MPP. No API key. The live 402 accepts[] is the quote.",
           "intent": "charge",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "2",
             "currency": "USD",
@@ -521,11 +526,13 @@
             {
               "mpp": {
                 "intent": "charge",
-                "method": "evm"
+                "method": "solana"
               }
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -678,9 +685,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -691,13 +698,15 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
     "/api/agent/v1/mailboxes/{mailboxId}/attachments/{attachmentId}": {
       "get": {
-        "description": "Keyless $0 x402 identity handshake. Payment binds the wallet; no USDC is charged. Get/context/attachment stay scan-gated: non-clean inbound bodies return metadata with content_omitted.",
+        "description": "Keyless $0 Solana USDC identity handshake. A clean attachment is returned as raw file bytes: Content-Type is the file mimetype and Content-Disposition is attachment with the filename. When scan_status is not clean, the response is JSON metadata with content_omitted true and no file bytes.",
         "operationId": "agentGetAttachment",
         "parameters": [
           {
@@ -743,6 +752,13 @@
         "responses": {
           "200": {
             "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "Attachment bytes. The response Content-Type is the file mimetype."
+                }
+              },
               "application/json": {
                 "schema": {
                   "additionalProperties": true,
@@ -770,7 +786,7 @@
                 }
               }
             },
-            "description": "Paid or identity-handshake success",
+            "description": "Clean attachment bytes, or JSON metadata when the file is withheld.",
             "headers": {
               "Cache-Control": {
                 "schema": {
@@ -780,6 +796,12 @@
               },
               "PAYMENT-RESPONSE": {
                 "description": "x402 settlement or identity-handshake receipt",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Content-Disposition": {
+                "description": "Present on a clean download: attachment with the original filename.",
                 "schema": {
                   "type": "string"
                 }
@@ -836,9 +858,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -849,7 +871,9 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -976,9 +1000,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -989,7 +1013,9 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -1263,9 +1289,9 @@
           "amount": "10000",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Pay-per-call USDC over x402 or MPP (when enabled). No API key. The live 402 accepts[] is the quote.",
+          "description": "Pay-per-call Solana USDC over x402 or MPP. No API key. The live 402 accepts[] is the quote.",
           "intent": "charge",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0.01",
             "currency": "USD",
@@ -1278,11 +1304,13 @@
             {
               "mpp": {
                 "intent": "charge",
-                "method": "evm"
+                "method": "solana"
               }
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -1550,9 +1578,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -1563,7 +1591,9 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       },
       "post": {
@@ -1836,9 +1866,9 @@
           "amount": "10000",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Pay-per-call USDC over x402 or MPP (when enabled). No API key. The live 402 accepts[] is the quote.",
+          "description": "Pay-per-call Solana USDC over x402 or MPP. No API key. The live 402 accepts[] is the quote.",
           "intent": "charge",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0.01",
             "currency": "USD",
@@ -1851,11 +1881,13 @@
             {
               "mpp": {
                 "intent": "charge",
-                "method": "evm"
+                "method": "solana"
               }
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -2035,9 +2067,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -2048,7 +2080,9 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -2338,9 +2372,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -2351,7 +2385,9 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -2635,9 +2671,9 @@
           "amount": "10000",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Pay-per-call USDC over x402 or MPP (when enabled). No API key. The live 402 accepts[] is the quote.",
+          "description": "Pay-per-call Solana USDC over x402 or MPP. No API key. The live 402 accepts[] is the quote.",
           "intent": "charge",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0.01",
             "currency": "USD",
@@ -2650,11 +2686,13 @@
             {
               "mpp": {
                 "intent": "charge",
-                "method": "evm"
+                "method": "solana"
               }
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -2938,9 +2976,9 @@
           "amount": "10000",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Pay-per-call USDC over x402 or MPP (when enabled). No API key. The live 402 accepts[] is the quote.",
+          "description": "Pay-per-call Solana USDC over x402 or MPP. No API key. The live 402 accepts[] is the quote.",
           "intent": "charge",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0.01",
             "currency": "USD",
@@ -2953,11 +2991,13 @@
             {
               "mpp": {
                 "intent": "charge",
-                "method": "evm"
+                "method": "solana"
               }
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -3084,9 +3124,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -3097,7 +3137,9 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -3381,9 +3423,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -3394,7 +3436,9 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     },
@@ -3591,9 +3635,9 @@
           "amount": "0",
           "authMode": "payment-required",
           "currency": "USDC",
-          "description": "Zero-amount x402 handshake. Payment binds the wallet identity; no USDC is charged. The live 402 accepts[] is the quote.",
+          "description": "Zero-amount Solana USDC handshake. Payment binds the wallet; no USDC is charged. The live 402 accepts[] is the quote.",
           "intent": "identity",
-          "method": "evm",
+          "method": "solana",
           "price": {
             "amount": "0",
             "currency": "USD",
@@ -3604,7 +3648,9 @@
               "x402": {}
             }
           ],
-          "receiver": "0xe943ca6F83E4585FB64c2118d36ac325e1bF149e"
+          "receiver": "6gL5gmFAkUqPD81DU4jtbBt1oTHyEQrD7n6ouDfHXmgE",
+          "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
       }
     }
